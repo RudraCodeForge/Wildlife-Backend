@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const { check } = require("express-validator");
+const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const User = require("../models/User");
 exports.LOGIN = async (req, res, next) => {
@@ -22,12 +23,13 @@ exports.LOGIN = async (req, res, next) => {
 
     // password return na karo
     const { password: pwd, ...userData } = user._doc;
-
+    // generate token
+    const token = jwt.sign({ userId: user._id, role:user.Role}, process.env.JWT_SECRETE, {
+      expiresIn: "3h",
+    });
     res.json({
       message: "Login Successful",
-      User: userData,
-      isLoggedIn: true,
-      Role: userData.Role,
+      token,
     });
   } catch (error) {
     next(error);
@@ -42,7 +44,6 @@ exports.REGISTER = [
     .withMessage("First name must be at least 3 characters long")
     .isAlpha()
     .withMessage("First name must be alphabetic"),
-  check("lastName").isAlpha().withMessage("Last name must be alphabetic"),
   check("username")
     .notEmpty()
     .withMessage("Username is required")
@@ -138,4 +139,18 @@ exports.LOGOUT = (req, res, next) => {
 exports.FORGET_PASSWORD = (req, res, next) => {
   console.log(req.body);
   res.json({ message: "Logout" });
+};
+exports.VERIFY = async (req, res, next) => {
+  const { token } = req.body;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRETE);
+    console.log("UserId:", decoded.userId); // yaha userId milegi
+    console.log("Role:", decoded.role);
+    const user = await User.findById(decoded.userId);
+    console.log(user);
+    res.json({ message: "Token Verified", userId: decoded.userId });
+  } catch (err) {
+    console.error("Invalid token:", err.message);
+    res.status(401).json({ message: "Invalid or expired token" });
+  }
 };

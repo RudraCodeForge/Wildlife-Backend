@@ -45,6 +45,12 @@ const UserSchema = mongoose.Schema({
   AccountCreated:{
     type: Date,
     default: Date.now
-  }
+  },
+  isVerified:{
+    type:Boolean,
+    default:false
+  },
+  verifyTokken:{type:String},
+  tokenExpires:{type:Date}
 })
 module.exports = mongoose.model("User",UserSchema);
