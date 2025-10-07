@@ -19,3 +19,10 @@ exports.HOME = (req, res, next) => {
 
   res.json({ pointsData });
 }
+
+exports.PROFILE = (req, res) => {
+  console.log("User data from token:", req.user);
+  
+  res.json({ message: "Profile fetched successfully", user: req.user });
+};
+
