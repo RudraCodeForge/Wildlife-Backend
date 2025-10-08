@@ -50,7 +50,7 @@ const UserSchema = mongoose.Schema({
     type:Boolean,
     default:false
   },
-  verifyTokken:{type:String},
-  tokenExpires:{type:Date}
+  VerifyToken:{type:String},
+  TokenExpires:{type:Date}
 })
 module.exports = mongoose.model("User",UserSchema);

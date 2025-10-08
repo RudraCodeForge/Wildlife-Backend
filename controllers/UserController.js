@@ -1,3 +1,4 @@
+const User = require('../models/User')
 exports.HOME = (req, res, next) => {
   const pointsData = [
     {
@@ -20,9 +21,17 @@ exports.HOME = (req, res, next) => {
   res.json({ pointsData });
 }
 
-exports.PROFILE = (req, res) => {
-  console.log("User data from token:", req.user);
-  
-  res.json({ message: "Profile fetched successfully", user: req.user });
+exports.PROFILE = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.userId})
+  const UserData ={
+    profileImage: user.profileImage,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    username: user.username,
+    email: user.email,
+    phone: user.phone,
+    isVerified: user.isVerified,
+  }
+  res.json({ UserData });
 };
 
